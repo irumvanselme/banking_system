@@ -3,12 +3,17 @@
 int main() {
     Utility utility;
 
-    string branch_name;
-    cout << "Enter the branch name :-";
+    string full_names, username, account_pin;
+    cout << "Enter the full names name :-";
+    getline(cin, full_names);
 
-    getline(cin, branch_name);
+    cout << "Enter the username name :-";
+    getline(cin, username);
 
-    utility.save_branch(branch_name);
+    cout << "Enter the PIN name :-";
+    getline(cin, account_pin);
+
+    utility.save_account(full_names, username, account_pin);
 
     return 0;
 }
