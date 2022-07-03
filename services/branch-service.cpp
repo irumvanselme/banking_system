@@ -45,13 +45,12 @@ public:
 
         string line;
 
-        while (getline(fin, line)) {
+        while (getline(fin, line))
             if (from_line(line).id == id) {
                 branch = from_line(line);
 
                 return branch;
             }
-        }
 
         return branch;
     }
@@ -69,14 +68,9 @@ public:
 
         outputStream.open(get_temp_data_store_path(), ios::out | ios::app);
 
-        int _id = 1;
-        for (const Branch &branch: previousBranches) {
-            if (branch.id != id) {
-                outputStream << _id << ", " << branch.name << "\n";
-
-                _id++;
-            }
-        }
+        for (const Branch &branch: previousBranches)
+            if (branch.id != id)
+                outputStream << branch.id << ", " << branch.name << "\n";
 
         remove(get_data_store_path().c_str());
         rename(get_temp_data_store_path().c_str(), get_data_store_path().c_str());
@@ -97,16 +91,11 @@ public:
 
         outputStream.open(get_temp_data_store_path(), ios::out | ios::app);
 
-        int _id = 1;
-        for (const Branch &branch: previousBranches) {
-            if (branch.id != id) {
-                outputStream << _id << ", " << branch.name << "\n";
-            } else {
-                outputStream << _id << ", " << branchInfo.name << "\n";
-            }
-
-            _id++;
-        }
+        for (const Branch &branch: previousBranches)
+            if (branch.id != id)
+                outputStream << branch.id << ", " << branch.name << "\n";
+            else
+                outputStream << id << ", " << branchInfo.name << "\n";
 
         remove(get_data_store_path().c_str());
         rename(get_temp_data_store_path().c_str(), get_data_store_path().c_str());
@@ -120,12 +109,13 @@ private:
 
         std::stringstream ss(line);
         int k = 0;
-        for (string rowElement; ss >> rowElement;) {
-            if (rowElement[rowElement.length() - 1] == ',')
-                rowElement.pop_back();
+        while (ss.good()) {
+            string substr;
 
-            if (k == 0) branch.id = stoi(rowElement);
-            else if (k == 1) branch.name = rowElement;
+            getline(ss, substr, ',');
+
+            if (k == 0) branch.id = stoi(substr);
+            else if (k == 1) branch.name = substr;
 
             k++;
 

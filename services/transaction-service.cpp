@@ -13,7 +13,7 @@ public:
 
         outputStream.open(get_data_store_path(), ios::out | ios::app);
 
-        outputStream << next_id() << ", " << transaction.account_id << ", " << transaction.branch_id << ", " << transaction.amount << ", " << transaction.transactionType << "\n";
+        outputStream << next_id() << ", " << transaction.account_id << ", " << transaction.branch_id << ", "  << transaction.amount << ", " << transaction.transactionType << "\n";
     }
 
     vector<Transaction> read() {
@@ -44,13 +44,9 @@ public:
 
         string line;
 
-        while (getline(fin, line)) {
-            if (from_line(line).id == id) {
-                transaction = from_line(line);
-
-                return transaction;
-            }
-        }
+        while (getline(fin, line))
+            if (from_line(line).id == id)
+                return from_line(line);
 
         return transaction;
     }
@@ -67,14 +63,10 @@ public:
 
         outputStream.open(get_temp_data_store_path(), ios::out | ios::app);
 
-        int _id = 1;
-        for (const Transaction &transaction: previousTransactions) {
-            if (transaction.id != id) {
-                outputStream << _id << ", " << transaction.account_id << ", " << transaction.branch_id << ", " << transaction.amount << ", " << transaction.transactionType << "\n";
+        for (const Transaction &transaction: previousTransactions)
+            if (transaction.id != id)
+                outputStream << transaction.id << ", " << transaction.account_id << ", " << transaction.branch_id << ", " << transaction.amount << ", " << transaction.transactionType << "\n";
 
-                _id++;
-            }
-        }
 
         remove(get_data_store_path().c_str());
         rename(get_temp_data_store_path().c_str(), get_data_store_path().c_str());
@@ -82,29 +74,23 @@ public:
         outputStream.close();
     }
 
-    void update_by_id(int id, Transaction transactionInfo){
+    void update_by_id(int id, Transaction transactionInfo) {
 
         Transaction existingTransaction = find_by_id(id);
-        if (existingTransaction.id == -1) {
+        if (existingTransaction.id == -1)
             cout << "User not available in the system";
-        }
 
-        vector<Transaction> previousTransactions  = read();
+        vector<Transaction> previousTransactions = read();
 
         fstream outputStream;
 
         outputStream.open(get_temp_data_store_path(), ios::out | ios::app);
 
-        int _id = 1;
-        for (const Transaction &transaction: previousTransactions) {
-            if (transaction.id != id) {
-                outputStream << _id << ", " << transaction.account_id << ", " << transaction.branch_id << ", " << transaction.amount << ", " << transaction.transactionType << "\n";
-            } else {
-                outputStream << _id << ", " << transactionInfo.account_id << ", " << transactionInfo.branch_id << ", " << transactionInfo.amount << ", " << transactionInfo.transactionType << "\n";
-            }
-
-            _id++;
-        }
+        for (const Transaction &transaction: previousTransactions)
+            if (transaction.id != id)
+                outputStream << transaction.id << ", " << transaction.account_id << ", " << transaction.branch_id << ", " << transaction.amount << ", " << transaction.transactionType << "\n";
+            else
+                outputStream << id << ", " << transactionInfo.account_id << ", " << transactionInfo.branch_id << ", " << transactionInfo.amount << ", " << transactionInfo.transactionType << "\n";
 
         remove(get_data_store_path().c_str());
         rename(get_temp_data_store_path().c_str(), get_data_store_path().c_str());
@@ -118,15 +104,15 @@ private:
 
         std::stringstream ss(line);
         int k = 0;
-        for (string rowElement; ss >> rowElement;) {
-            if (rowElement[rowElement.length() - 1] == ',')
-                rowElement.pop_back();
+        while (ss.good()) {
+            string substr;
+            getline(ss, substr, ',');
 
-            if (k == 0) transaction.id = stoi(rowElement);
-            else if (k == 1) transaction.account_id = stoi(rowElement);
-            else if (k == 2) transaction.branch_id = stoi(rowElement);
-            else if (k == 3) transaction.amount = stod(rowElement);
-            else if (k == 4) transaction.transactionType = (ETransactionType) stoi(rowElement);
+            if (k == 0) transaction.id = stoi(substr);
+            else if (k == 1) transaction.account_id = stoi(substr);
+            else if (k == 2) transaction.branch_id = stoi(substr);
+            else if (k == 3) transaction.amount = stod(substr);
+            else if (k == 4) transaction.transactionType = (ETransactionType) stoi(substr);
 
             k++;
         }

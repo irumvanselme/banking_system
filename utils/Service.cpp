@@ -20,16 +20,20 @@ public:
 
 protected:
     int next_id() {
-        int next_id = 1;
+        int id = 0;
 
-        fstream fin;
-        fin.open(get_data_store_path(), ios::in);
+        fstream file;
+        file.open(get_data_store_path(), ios::in);
 
         string line;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string id_as_string;
+            getline(ss, id_as_string, ',');
+            id = stoi(id_as_string);
+        }
 
-        while (getline(fin, line))
-            next_id++;
-
-        return next_id;
+        file.close();
+        return id + 1;
     }
 };
